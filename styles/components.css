@@ -1,0 +1,136 @@
+.hero {
+  background: radial-gradient(circle at top, #fdf7ee 0, #f3e3cc 40%, #f6f0e8 100%);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 1.8rem 1.6rem 2rem;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 2rem;
+}
+
+.hero-text h1 {
+  font-size: clamp(1.8rem, 2.4vw, 2.3rem);
+  margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+  max-width: 640px;
+  color: var(--color-text-muted);
+}
+
+.hero-actions {
+  margin-top: 1.4rem;
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.info-section {
+  margin-top: 2rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: var(--radius-lg);
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  background: #f8efe2;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.pill-toggle-group {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background-color: #f5e6d6;
+}
+
+.pill-toggle {
+  border-radius: 999px;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.pill-toggle.active {
+  background-color: #ffffff;
+  color: var(--color-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.icon-arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--color-text);
+  border-bottom: 2px solid var(--color-text);
+  transform: rotate(-135deg);
+  margin-left: 2px;
+}
+
+.movement-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.movement-item {
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  cursor: pointer;
+}
+
+.movement-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.movement-meta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.favorite-heart {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.favorite-heart.active {
+  color: #d86b6b;
+}
+
+.note-block {
+  margin-top: 1rem;
+}
+
+.note-content {
+  padding: 0.7rem 0.8rem;
+  border-radius: var(--radius-md);
+  background-color: #fffaf3;
+  border: 1px solid var(--color-border-subtle);
+  white-space: pre-wrap;
+}
+

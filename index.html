@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Справочник движений классического танца</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/pages.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body data-root="root" data-page="home">
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-area" title="На главную">
+        <div class="logo-mark">KT</div>
+        <div class="logo-text">
+          <span class="site-title">Классический танец</span>
+          <span class="site-subtitle">Справочник движений</span>
+        </div>
+      </a>
+
+      <div class="header-controls">
+        <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Открыть меню">
+          <span class="icon-arrow"></span>
+        </button>
+
+        <form class="header-search" id="headerSearchForm">
+          <input
+            type="search"
+            id="headerSearchInput"
+            class="input"
+            placeholder="Быстрый поиск движения..."
+            aria-label="Быстрый поиск движения"
+          >
+          <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+
+        <button
+          id="accountButton"
+          class="btn btn-outline account-button"
+          type="button"
+          title="Вход/Регистрация"
+        >
+          Вход/Регистрация
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link" data-page-link="home">Главная</a>
+      <a href="pages/search.html" class="sidebar-link" data-page-link="search">Поиск</a>
+      <a href="pages/alphabet.html" class="sidebar-link" data-page-link="alphabet">Алфавитный указатель</a>
+      <a href="pages/settings.html" class="sidebar-link" data-page-link="site-settings">Настройки сайта</a>
+    </nav>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <main class="page page-home">
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Справочник движений классического танца</h1>
+        <p>
+          Всем привет!
+        </p>
+        <p>
+          Используйте поиск, чтобы быстро найти нужное движение, или перейдите в алфавитный указатель для
+          последовательного изучения терминов на русском и французском языках.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="pages/search.html">Перейти к поиску</a>
+          <a class="btn btn-ghost" href="pages/alphabet.html">Алфавитный указатель</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section">
+      <h2>О классическом танце</h2>
+      <p>
+        Классический танец — это ...
+      </p>
+      <p>
+        В нашем справочнике вы ...
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-column">
+        <h3 class="footer-title">Контакты разработчика</h3>
+        <p>E-mail: <a href="mailto:qwerty@example.com">qwerty@example.com</a></p>
+      </div>
+      <div class="footer-column">
+        <form id="footerFeedbackForm" class="footer-feedback-form">
+          <label for="footerFeedbackMessage" class="footer-label">
+            Если вы заметили ошибку или хотите что-то добавить, напишите об этом здесь:
+          </label>
+          <textarea
+            id="footerFeedbackMessage"
+            class="textarea"
+            rows="3"
+            placeholder="Ваше сообщение"
+          ></textarea>
+          <button type="submit" class="btn btn-secondary">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </footer>
+
+  <script src="scripts/app.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/router.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/api.js"></script>
+</body>
+</html>
+

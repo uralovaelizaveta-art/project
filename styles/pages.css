@@ -1,0 +1,142 @@
+.page-home .info-section {
+  margin-bottom: 1rem;
+}
+
+.page-search-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
+  gap: 1.5rem;
+}
+
+.search-main-form {
+  margin-bottom: 1rem;
+}
+
+.search-main-form input {
+  font-size: 1rem;
+}
+
+.search-results-group {
+  margin-top: 1rem;
+}
+
+.search-results-group h3 {
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.page-alphabet-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+}
+
+.alphabet-list-section {
+  margin-top: 0.8rem;
+}
+
+.alphabet-group-title {
+  margin-top: 0.9rem;
+  margin-bottom: 0.35rem;
+}
+
+.page-movement-header {
+  margin-bottom: 1rem;
+}
+
+.page-movement-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.2fr);
+  gap: 1.4rem;
+}
+
+.movement-media {
+  border-radius: var(--radius-md);
+  background: #fffaf3;
+  padding: 0.8rem;
+  border: 1px solid var(--color-border-subtle);
+}
+
+.movement-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-favorites-list {
+  margin-top: 1rem;
+}
+
+.profile-greeting {
+  margin-bottom: 1rem;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+  gap: 1.4rem;
+}
+
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+}
+
+.settings-list li {
+  padding: 0.35rem 0;
+}
+
+.login-page,
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #fdf7ee, #f3e3cc);
+}
+
+.auth-card {
+  width: min(420px, 100% - 2rem);
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 1.6rem 1.8rem 1.8rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.auth-toggle {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.auth-form-group {
+  margin-bottom: 0.8rem;
+}
+
+.auth-form-group label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+}
+
+.auth-error {
+  color: #b42626;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
+.feedback-page-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+  gap: 1.5rem;
+}
+

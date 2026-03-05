@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Настройки сайта — Справочник</title>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+  <link rel="stylesheet" href="../styles/pages.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body data-root="page" data-page="site-settings">
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="../index.html" class="logo-area" title="На главную">
+        <div class="logo-mark">KT</div>
+        <div class="logo-text">
+          <span class="site-title">Классический танец</span>
+          <span class="site-subtitle">Справочник движений</span>
+        </div>
+      </a>
+      <div class="header-controls">
+        <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Открыть меню">
+          <span class="icon-arrow"></span>
+        </button>
+        <form class="header-search" id="headerSearchForm">
+          <input
+            type="search"
+            id="headerSearchInput"
+            class="input"
+            placeholder="Быстрый поиск движения..."
+            aria-label="Быстрый поиск движения"
+          >
+          <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+        <button
+          id="accountButton"
+          class="btn btn-outline account-button"
+          type="button"
+          title="Вход/Регистрация"
+        >
+          Вход/Регистрация
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-hidden="true">
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <main class="page">
+    <h1>Настройки сайта</h1>
+    <p>Страница-заготовка для будущих настроек интерфейса и отображения.</p>
+    <section class="card">
+      <p>В будущей версии здесь появятся параметры языка интерфейса, темы оформления и размера шрифта.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-column">
+        <h3 class="footer-title">Контакты разработчика</h3>
+        <p>E-mail: <a href="mailto:qwerty@example.com">qwerty@example.com</a></p>
+      <div class="footer-column">
+        <form id="footerFeedbackForm" class="footer-feedback-form">
+          <label for="footerFeedbackMessage" class="footer-label">
+            Если вы заметили ошибку или хотите что-то добавить, напишите об этом здесь:
+          </label>
+          <textarea
+            id="footerFeedbackMessage"
+            class="textarea"
+            rows="3"
+            placeholder="Ваше сообщение"
+          ></textarea>
+          <button type="submit" class="btn btn-secondary">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../scripts/app.js"></script>
+  <script src="../scripts/ui.js"></script>
+  <script src="../scripts/router.js"></script>
+  <script src="../scripts/auth.js"></script>
+</body>
+</html>
+
