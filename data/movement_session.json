@@ -1,0 +1,307 @@
+{
+  "session_start_unix": 1781079672.6748617,
+  "duration_sec": 48.94,
+  "events": [
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 10.02
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 10.83
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 11.66
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 0.99,
+      "time_sec": 12.49
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 13.47
+    },
+    {
+      "movement_id": "basic1",
+      "movement_name": "Battement tendu",
+      "confidence": 1.0,
+      "time_sec": 13.98
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 14.46
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 15.75
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 16.49
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 17.37
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 18.3
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 19.19
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 20.11
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 21.08
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 21.42
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 22.24
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 23.04
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 23.39
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 24.36
+    },
+    {
+      "movement_id": "pos1",
+      "movement_name": "I position",
+      "confidence": 1.0,
+      "time_sec": 24.85
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 25.66
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 26.31
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 27.13
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 27.95
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 30.54
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 31.49
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 32.33
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 33.13
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 34.1
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 35.24
+    },
+    {
+      "movement_id": "pos1",
+      "movement_name": "I position",
+      "confidence": 1.0,
+      "time_sec": 35.74
+    },
+    {
+      "movement_id": "pos1",
+      "movement_name": "I position",
+      "confidence": 1.0,
+      "time_sec": 36.56
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 36.91
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 37.73
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 38.57
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 39.4
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 40.22
+    },
+    {
+      "movement_id": "pos1",
+      "movement_name": "I position",
+      "confidence": 1.0,
+      "time_sec": 40.72
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 41.38
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 41.9
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 42.72
+    },
+    {
+      "movement_id": "basic2",
+      "movement_name": "Plie",
+      "confidence": 1.0,
+      "time_sec": 43.06
+    },
+    {
+      "movement_id": "basic2",
+      "movement_name": "Plie",
+      "confidence": 1.0,
+      "time_sec": 43.99
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 44.63
+    },
+    {
+      "movement_id": "basic2",
+      "movement_name": "Plie",
+      "confidence": 1.0,
+      "time_sec": 45.11
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 45.6
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 45.92
+    },
+    {
+      "movement_id": "pos4",
+      "movement_name": "IV position",
+      "confidence": 1.0,
+      "time_sec": 46.88
+    },
+    {
+      "movement_id": "basic1",
+      "movement_name": "Battement tendu",
+      "confidence": 1.0,
+      "time_sec": 47.39
+    },
+    {
+      "movement_id": "pos2",
+      "movement_name": "II position",
+      "confidence": 1.0,
+      "time_sec": 48.35
+    }
+  ],
+  "sequences_detected": []
+}
