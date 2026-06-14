@@ -22,16 +22,16 @@ from movement_timeline import MovementTimeline, SequenceDetector, TimelineSettin
 
 
 @dataclass
-class Point2D:
+class Point2D: #Класс для хранения координат и видимости ключевых точек позы.
     x: float
     y: float
     visibility: float = 1.0
 
 
-class PoseModel:
+class PoseModel: 
     """Обёртка над MediaPipe Pose Landmarker."""
 
-    def __init__(self, model_path: str, min_confidence: float = 0.5):
+    def __init__(self, model_path: str, min_confidence: float = 0.5): #Инициализация модели MediaPipe Pose Landmarker с заданным путем к модели и минимальной уверенностью для обнаружения позы.
         options = vision.PoseLandmarkerOptions(
             base_options=python.BaseOptions(model_asset_path=model_path),
             running_mode=vision.RunningMode.VIDEO,
@@ -42,12 +42,12 @@ class PoseModel:
         )
         self.landmarker = vision.PoseLandmarker.create_from_options(options)
 
-    def detect(self, frame_bgr, timestamp_ms: int):
+    def detect(self, frame_bgr, timestamp_ms: int): #Преобразование кадра из BGR в RGB, создание объекта mp.Image и передача его в модель для получения позы. Результат — объект с данными о позе, который можно использовать для извлечения ключевых точек.
         frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
         return self.landmarker.detect_for_video(mp_image, timestamp_ms)
 
-    def close(self):
+    def close(self): #Закрытие модели и освобождение ресурсов.
         self.landmarker.close()
 
 
@@ -113,7 +113,7 @@ class PoseGeometry:
     }
 
     @staticmethod
-    def extract_points(landmarks, frame_w: int, frame_h: int) -> dict[str, Point2D]:
+    def extract_points(landmarks, frame_w: int, frame_h: int) -> dict[str, Point2D]: #Преобразование нормализованных координат ключевых точек из MediaPipe в пиксельные координаты на кадре, а также сохранение информации о видимости каждой точки. Результат — словарь с именами точек и их координатами и видимостью.
         points = {}
         for name, idx in PoseGeometry.KEYPOINTS.items():
             lm = landmarks[idx]
@@ -125,7 +125,7 @@ class PoseGeometry:
         return points
 
     @staticmethod
-    def angle_at_vertex(a: Point2D, b: Point2D, c: Point2D) -> float:
+    def angle_at_vertex(a: Point2D, b: Point2D, c: Point2D) -> float: # метод для вычисления угла в вершине b между прямыми ba и bc, который используется для оценки позы и классификации движений. Угол возвращается в градусах. Если одна из точек совпадает (длина вектора 0), возвращается NaN.
         """Угол в вершине b между прямыми ba и bc (в градусах)."""
         v1 = (a.x - b.x, a.y - b.y)
         v2 = (c.x - b.x, c.y - b.y)
@@ -140,7 +140,7 @@ class PoseGeometry:
         return math.degrees(math.acos(cos_angle))
 
     @classmethod
-    def compute_angles(cls, points: dict[str, Point2D]) -> dict[str, float]:
+    def compute_angles(cls, points: dict[str, Point2D]) -> dict[str, float]: #Вычисление углов между прямыми, образованными ключевыми точками, для оценки позы и классификации движений.
         angles = {}
         for name, (a_name, b_name, c_name) in cls.ANGLES.items():
             angles[name] = cls.angle_at_vertex(points[a_name], points[b_name], points[c_name])
@@ -156,11 +156,11 @@ class PoseGeometry:
     }
 
     @staticmethod
-    def _point_distance(a: Point2D, b: Point2D) -> float:
+    def _point_distance(a: Point2D, b: Point2D) -> float: #евклидово расстояние между двумя точками в пикселях
         return math.hypot(a.x - b.x, a.y - b.y)
 
     @classmethod
-    def compute_distances(cls, points: dict[str, Point2D]) -> dict[str, float]:
+    def compute_distances(cls, points: dict[str, Point2D]) -> dict[str, float]: #Расстояния между точками ног в пикселях и нормализованные относительно ширины бёдер (hip_width) — удобнее для правил.
         """
         Расстояния между точками ног в пикселях и нормализованные
         относительно ширины бёдер (hip_width) — удобнее для правил.
@@ -189,7 +189,7 @@ class PoseGeometry:
         return distances
 
     @classmethod
-    def compute_foot_state(cls, points: dict[str, Point2D]) -> dict[str, float]:
+    def compute_foot_state(cls, points: dict[str, Point2D]) -> dict[str, float]: #метод для оценки состояния ног, включая видимость ключевых точек и признаки «ноги на полу», которые используются в правилах классификации позиций.
         """
         Видимость точек ног и признаки «ноги на полу».
         toe_above_ankle_norm > 0 — носок выше лодыжки (поднят с пола).
@@ -224,11 +224,11 @@ class PoseGeometry:
         }
 
     @classmethod
-    def draw_skeleton(cls, frame, points: dict[str, Point2D]):
+    def draw_skeleton(cls, frame, points: dict[str, Point2D]): #Отрисовка скелета и ключевых точек на кадре для визуализации.
         for a_name, b_name in cls.CONNECTIONS:
             a = points[a_name]
             b = points[b_name]
-            if a.visibility < 0.5 or b.visibility < 0.5:
+            if a.visibility < 0.45 or b.visibility < 0.45:
                 continue
             cv2.line(
                 frame,
@@ -239,7 +239,7 @@ class PoseGeometry:
             )
 
         for name, p in points.items():
-            if p.visibility < 0.2:
+            if p.visibility < 0.1:
                 continue
             cv2.circle(frame, (int(p.x), int(p.y)), 3, (255, 255, 255), -1)
             cv2.putText(
@@ -255,24 +255,24 @@ class PoseGeometry:
 
 
 @dataclass
-class ClassificationResult:
+class ClassificationResult: #Результат классификации движения, содержащий идентификатор, название и уверенность.
     movement_id: str
     movement_name: str
     confidence: float
 
 
-class MovementClassifier:
+class MovementClassifier: # Класс для классификации движений на основе углов и расстояний, используя правила из movement_rules.py.
     """
     Сравнивает текущие углы с правилами из movement_rules.py
     и возвращает название наиболее подходящего движения.
     """
 
-    def __init__(self, rules: list[dict] | None = None, settings: dict | None = None):
+    def __init__(self, rules: list[dict] | None = None, settings: dict | None = None): #Инициализация классификатора с правилами и настройками. Если не переданы, используются значения по умолчанию из movement_rules.py.
         self.rules = rules if rules is not None else MOVEMENT_RULES
         self.settings = settings if settings is not None else CLASSIFIER_SETTINGS
 
     @staticmethod
-    def _score_angle(value: float, low: float, high: float) -> float:
+    def _score_angle(value: float, low: float, high: float) -> float: #оценка соответствия одного угла заданному диапазону в правилах движения.
         """1.0 — угол в диапазоне, меньше — чем дальше от диапазона."""
         if math.isnan(value):
             return 0.0
@@ -281,10 +281,10 @@ class MovementClassifier:
         dist = low - value if value < low else value - high
         return max(0.0, 1.0 - dist / 40.0)
 
-    def _score_range(self, value: float, low: float, high: float) -> float:
+    def _score_range(self, value: float, low: float, high: float) -> float: #оценка соответствия одного значения (угла, расстояния или видимости) заданному диапазону в правилах
         return self._score_angle(value, low, high)
 
-    def _score_angle_set(self, angles: dict[str, float], angle_rules: dict) -> float:
+    def _score_angle_set(self, angles: dict[str, float], angle_rules: dict) -> float: #оценка соответствия текущих данных правилам по углам суставов
         if not angle_rules:
             return 0.0
         scores = [
@@ -293,7 +293,7 @@ class MovementClassifier:
         ]
         return sum(scores) / len(scores)
 
-    def _score_distance_set(self, distances: dict[str, float], distance_rules: dict) -> float:
+    def _score_distance_set(self, distances: dict[str, float], distance_rules: dict) -> float: #оценка соответствия текущих данных правилам расстояний между точками ног
         if not distance_rules:
             return 0.0
         scores = [
@@ -303,12 +303,12 @@ class MovementClassifier:
         return sum(scores) / len(scores)
 
     @staticmethod
-    def _resolve_visibility_range(rule_value) -> tuple[float, float]:
+    def _resolve_visibility_range(rule_value) -> tuple[float, float]:#определяет, какие пороги видимости применять для оценки соответствия правилам видимости точек ног
         if isinstance(rule_value, str):
             return VISIBILITY_PRESETS[rule_value]
         return rule_value
 
-    def _score_visibility_set(
+    def _score_visibility_set( #оценка соответствия текущих данных правилам видимости точек ног
         self, foot_state: dict[str, float], visibility_rules: dict
     ) -> float:
         if not visibility_rules:
@@ -321,7 +321,7 @@ class MovementClassifier:
             scores.append(self._score_range(foot_state.get(key, 0.0), low, high))
         return sum(scores) / len(scores)
 
-    def _score_foot_on_floor(
+    def _score_foot_on_floor( #оценка соответствия текущих данных правилам «нога на полу»
         self, foot_state: dict[str, float], floor_rules: dict
     ) -> float:
         if not floor_rules:
@@ -332,7 +332,7 @@ class MovementClassifier:
         ]
         return sum(scores) / len(scores)
 
-    def _floor_rules_for(self, rule: dict, block: dict) -> dict:
+    def _floor_rules_for(self, rule: dict, block: dict) -> dict: #определяет, какие правила для оценки «ноги на полу» применять к данному блоку правил движения
         merged = {}
         rule_id = str(rule.get("id", ""))
         if rule.get("requires_floor") or rule_id.startswith("pos"):
@@ -341,13 +341,13 @@ class MovementClassifier:
         return merged
 
     @staticmethod
-    def _block_has_rules(block: dict) -> bool:
+    def _block_has_rules(block: dict) -> bool: #проверяет, есть ли в блоке правила для оценки (углы, расстояния, видимость или ноги на полу)
         return any(
             block.get(key)
             for key in ("angles", "distances", "visibility", "foot_on_floor")
         )
 
-    def _score_block(
+    def _score_block( #оценка соответствия текущих данных одному блоку правил движения
         self,
         angles: dict[str, float],
         distances: dict[str, float],
@@ -369,7 +369,7 @@ class MovementClassifier:
 
         return sum(parts) / len(parts) if parts else 0.0
 
-    def _score_movement(
+    def _score_movement( #оценка соответствия текущих данных правилам движения
         self,
         angles: dict[str, float],
         distances: dict[str, float],
@@ -390,7 +390,7 @@ class MovementClassifier:
 
         return 0.0
 
-    def classify(
+    def classify( #классификация движения
         self,
         angles: dict[str, float],
         distances: dict[str, float] | None = None,
@@ -419,14 +419,14 @@ class MovementClassifier:
         return ClassificationResult(best_id, best_name, round(best_score, 2))
 
 
-class DataPrinter:
+class DataPrinter: #Класс для печати данных с интервалом в консоль, чтобы не засорять её слишком частыми обновлениями.
     """Печать данных с интервалом."""
 
-    def __init__(self, interval_sec: float = 0.5):
+    def __init__(self, interval_sec: float = 0.5): #интервал между печатью данных в консоль
         self.interval_sec = interval_sec
         self.last_print_time = 0.0
 
-    def should_print(self) -> bool:
+    def should_print(self) -> bool: #проверяет, прошло ли достаточно времени с последней печати
         now = time.time()
         if now - self.last_print_time >= self.interval_sec:
             self.last_print_time = now
@@ -434,7 +434,7 @@ class DataPrinter:
         return False
 
     @staticmethod
-    def print_data(
+    def print_data( #печать данных в консоль
         points: dict[str, Point2D],
         angles: dict[str, float],
         distances: dict[str, float],
@@ -451,28 +451,28 @@ class DataPrinter:
             for line in timeline.format_history_lines(8):
                 print(f"  {line}")
 
-        # print("\nУГЛЫ МЕЖДУ ПРЯМЫМИ (градусы):")
-        # for name, angle in angles.items():
-        #     if math.isnan(angle):
-        #         print(f"  {name:>22}: n/a")
-        #     else:
-        #         print(f"  {name:>22}: {angle:6.1f}°")
+        print("\nУГЛЫ МЕЖДУ ПРЯМЫМИ (градусы):")
+        for name, angle in angles.items():
+            if math.isnan(angle):
+                print(f"  {name:>22}: n/a")
+            else:
+                print(f"  {name:>22}: {angle:6.1f}°")
 
-        print("\nВИДИМОСТЬ И НОГИ НА ПОЛУ (для позиций):")
-        for name, value in foot_state.items():
-            if name.endswith("_visibility"):
-                print(f"  {name:>28}: {value:5.2f}")
-            elif name.endswith("_norm"):
-                print(f"  {name:>28}: {value:6.3f}")
+        # print("\nВИДИМОСТЬ И НОГИ НА ПОЛУ (для позиций):")
+        # for name, value in foot_state.items():
+        #     if name.endswith("_visibility"):
+        #         print(f"  {name:>28}: {value:5.2f}")
+        #     elif name.endswith("_norm"):
+        #         print(f"  {name:>28}: {value:6.3f}")
 
-        print("\nРАССТОЯНИЯ (норм. к бёдрам):")
-        for name in sorted(distances):
-            if not name.endswith("_norm"):
-                continue
-            print(f"  {name:>28}: {distances[name]:6.3f}")
+        # print("\nРАССТОЯНИЯ (норм. к бёдрам):")
+        # for name in sorted(distances):
+        #     if not name.endswith("_norm"):
+        #         continue
+        #     print(f"  {name:>28}: {distances[name]:6.3f}")
 
 
-class RealTimePoseApp:
+class RealTimePoseApp: #Главный класс приложения, который объединяет все компоненты и запускает цикл обработки видео.
     def __init__(self, model_path: str, camera_id: int = 0, print_interval: float = 0.5):
         self.model = PoseModel(model_path)
         self.geometry = PoseGeometry()
@@ -494,7 +494,7 @@ class RealTimePoseApp:
         if not self.cap.isOpened():
             raise RuntimeError("Не удалось открыть камеру.")
 
-    def run(self):
+    def run(self): #главный цикл приложения
         print("Запуск. Нажмите 'Esc' для выхода.")
         start_time = time.time()
 
@@ -534,7 +534,7 @@ class RealTimePoseApp:
                         print(f"\n>>> ПОСЛЕДОВАТЕЛЬНОСТЬ: {seq.sequence_name} "
                               f"({seq.time_sec:.1f}s)")
 
-                self._draw_history(frame, self.timeline)
+                # self._draw_history(frame, self.timeline)
 
                 if self.printer.should_print():
                     self.printer.print_data(
@@ -556,7 +556,7 @@ class RealTimePoseApp:
         cv2.destroyAllWindows()
 
     @staticmethod
-    def _draw_movement_label(frame, classification: ClassificationResult):
+    def _draw_movement_label(frame, classification: ClassificationResult): #вывод текущего движения на экран
         label = f"Now: {classification.movement_name} ({classification.confidence:.0%})"
         cv2.rectangle(frame, (10, 10), (10 + len(label) * 11, 45), (0, 0, 0), -1)
         cv2.putText(
@@ -565,7 +565,7 @@ class RealTimePoseApp:
         )
 
     @staticmethod
-    def _draw_history(frame, timeline: MovementTimeline):
+    def _draw_history(frame, timeline: MovementTimeline): #вывод истории движений на экран
         lines = ["History:"] + timeline.format_history_lines(5)
         y = 55
         for line in lines:

@@ -1,7 +1,5 @@
 """
 ПРАВИЛА КЛАССИФИКАЦИИ ДВИЖЕНИЙ
-==============================
-Заполняйте только этот файл.
 
 ДВА ТИПА ПРАВИЛ (можно комбинировать в одном движении):
   "angles"     — углы суставов в градусах
@@ -95,7 +93,7 @@ MOVEMENT_RULES = [
       "right_knee": (100, 165),
     },
     # Необязательно: свой порог для этого движения (0..1)
-    # "min_score": 0.6,
+    "min_score": 0.6,
   },
   {
     "id": "basic1",
@@ -120,6 +118,7 @@ MOVEMENT_RULES = [
             },
         },
     ],
+    "min_score": 0.6,
   },
   {
     "id": "basic3",
@@ -144,6 +143,7 @@ MOVEMENT_RULES = [
             },
         },
     ],
+    "min_score": 0.6,
   },
   {
     "id": "basic4",
@@ -154,7 +154,7 @@ MOVEMENT_RULES = [
             "angles": {
                 "left_knee":  (100, 135),    # рабочая — согнута
                 "right_knee": (165, 180),   # опорная — прямая
-                "left_hip": (150, 165),
+                "left_hip": (130, 165),
                 "right_hip": (170, 180)
             },
         },
@@ -164,10 +164,11 @@ MOVEMENT_RULES = [
                 "right_knee": (100, 135),   # рабочая — согнута
                 "left_knee":  (165, 180),
                 "left_hip": (170, 180),
-                "right_hip": (150, 165)
+                "right_hip": (130, 165)
             },
         },
     ],
+    "min_score": 0.6,
   },
   {
     "id": "basic5",
@@ -192,6 +193,7 @@ MOVEMENT_RULES = [
             },
         },
     ],
+    "min_score": 0.6,
   },
   {
     "id": "basic6",
@@ -211,7 +213,8 @@ MOVEMENT_RULES = [
                 "left_hip":  (170, 180),  
             },
         },
-    ]
+    ],
+    "min_score": 0.6,
   },
   # ------------------------------------------------------------------
   # КАК ДОБАВИТЬ НОВОЕ ДВИЖЕНИЕ — скопируйте блок ниже в конец списка:
@@ -241,6 +244,11 @@ MOVEMENT_RULES = [
       "ankles_norm": (0.15, 0.55),
       "heels_norm":  (0.10, 0.45),
     },
+    "angles": {
+        "left_knee":  (170, 180),
+        "right_knee": (170, 180)
+    },
+    "min_score": 0.6,
   },
   {
     "id": "pos2",
@@ -254,6 +262,11 @@ MOVEMENT_RULES = [
       "ankle_x_gap_norm": (0.90, 2.50),
       "toes_norm":        (0.90, 2.80),
     },
+    "angles": {
+        "left_knee":  (170, 180),
+        "right_knee": (170, 180)
+    },
+    "min_score": 0.6,
   },
   {
     "id": "pos3",
@@ -269,6 +282,10 @@ MOVEMENT_RULES = [
           "ankles_norm": (0.05, 0.45),
           "heels_norm":  (0.05, 0.50),
         },
+        "angles": {
+        "left_knee":  (170, 180),
+        "right_knee": (170, 180)
+    },
       },
       {
         "label": "пятка правой ноги скрыта (приставлена)",
@@ -280,8 +297,13 @@ MOVEMENT_RULES = [
           "ankles_norm": (0.05, 0.45),
           "heels_norm":  (0.05, 0.50),
         },
+        "angles": {
+        "left_knee":  (170, 180),
+        "right_knee": (170, 180)
+    },
       },
     ],
+    "min_score": 0.6,
   },
   {
     "id": "pos4",
@@ -294,6 +316,11 @@ MOVEMENT_RULES = [
       "ankles_norm":      (0.30, 0.90),
       "ankle_depth_norm": (0.15, 0.80),
     },
+    "angles": {
+        "left_knee":  (170, 180), 
+        "right_knee": (170, 180)
+    },
+    "min_score": 0.6,
   },
   {
     "id": "pos5",
@@ -310,6 +337,10 @@ MOVEMENT_RULES = [
           "heels_norm":  (0.02, 0.35),
           "left_heel_right_toe_norm": (0.05, 0.55),
         },
+        "angles": {
+            "left_knee":  (170, 180), 
+            "right_knee": (170, 180)
+        },
       },
       {
         "label": "правая пятка за левой стопой",
@@ -322,8 +353,13 @@ MOVEMENT_RULES = [
           "heels_norm":  (0.02, 0.35),
           "right_heel_left_toe_norm": (0.05, 0.55),
         },
+        "angles": {
+            "left_knee":  (170, 180), 
+            "right_knee": (170, 180)
+        },
       },
     ],
+    "min_score": 0.6,
   },
 ]
 
