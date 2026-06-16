@@ -6,7 +6,7 @@ class RealtimeController {
 
     this.video = document.getElementById('videoElement');
     this.poseOverlay = document.getElementById('poseOverlay');
-    this.poseCtx = this.poseOverlay.getContext('2d');
+    this.poseCtx = this.poseOverlay ? this.poseOverlay.getContext('2d') : null;
     this.canvas = null;
     this.ctx = null;
     this.stream = null;
@@ -14,6 +14,7 @@ class RealtimeController {
     this.isConnecting = false;
     this.waitingForResult = false;
     this.isRunning = false;
+    this.isSkeletonVisible = true;
     this.frameCount = 0;
     this.startTime = Date.now();
     this.frameIntervalMs = 50;
@@ -45,6 +46,7 @@ class RealtimeController {
 
     this.startBtn = document.getElementById('startBtn');
     this.stopBtn = document.getElementById('stopBtn');
+    this.toggleSkeletonBtn = document.getElementById('toggleSkeletonBtn');
     this.statusText = document.getElementById('statusText');
     this.statusIndicator = document.getElementById('statusIndicator');
     this.movementsList = document.getElementById('movementsList');
@@ -64,6 +66,9 @@ class RealtimeController {
 
     this.startBtn.addEventListener('click', () => this.start());
     this.stopBtn.addEventListener('click', () => this.stop());
+    if (this.toggleSkeletonBtn) {
+      this.toggleSkeletonBtn.addEventListener('click', () => this.toggleSkeleton());
+    }
   }
 
   openModal() {
@@ -237,6 +242,11 @@ class RealtimeController {
     this.updateStatus(`Сейчас: ${movement} (${confidence}%)`, true);
     this.currentMovementName.textContent = movement;
     this.currentMovementConfidence.textContent = `${confidence}%`;
+    if (result.ready_for_detection === false && Object.keys(result.pose_points || {}).length > 0) {
+      this.updateStatus('Отойдите назад, чтобы фигура была видна полностью', true);
+      this.currentMovementName.textContent = movement;
+      this.currentMovementConfidence.textContent = 'Встаньте в полный рост';
+    }
     this.drawPose(result.pose_points || {});
 
     if (Array.isArray(result.movements)) {
@@ -304,7 +314,7 @@ class RealtimeController {
   resizePoseOverlay() {
     const width = this.video.clientWidth;
     const height = this.video.clientHeight;
-    if (!width || !height) return;
+    if (!this.poseOverlay || !this.poseCtx || !width || !height) return;
 
     const pixelRatio = window.devicePixelRatio || 1;
     const canvasWidth = Math.round(width * pixelRatio);
@@ -322,6 +332,7 @@ class RealtimeController {
   }
 
   clearPose() {
+    if (!this.poseOverlay || !this.poseCtx) return;
     this.poseCtx.clearRect(
       0,
       0,
@@ -331,6 +342,11 @@ class RealtimeController {
   }
 
   drawPose(points) {
+    if (!this.isSkeletonVisible) {
+      this.clearPose();
+      return;
+    }
+    if (!this.poseOverlay || !this.poseCtx) return;
     this.resizePoseOverlay();
     this.clearPose();
 
@@ -387,6 +403,18 @@ class RealtimeController {
       this.statusIndicator.classList.add('connected');
     } else {
       this.statusIndicator.classList.remove('connected');
+    }
+  }
+
+  toggleSkeleton() {
+    this.isSkeletonVisible = !this.isSkeletonVisible;
+    if (this.toggleSkeletonBtn) {
+      this.toggleSkeletonBtn.textContent = this.isSkeletonVisible
+        ? 'Скрыть скелет'
+        : 'Показать скелет';
+    }
+    if (!this.isSkeletonVisible) {
+      this.clearPose();
     }
   }
 

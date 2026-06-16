@@ -217,12 +217,15 @@ MOVEMENT_RULES = [
       "right_heel": "visible",
     },
     "distances": {
-      "ankles_norm": (0.15, 0.55),
-      "heels_norm":  (0.10, 0.45),
+      "ankles_norm": (0.08, 0.45),
+      "heels_norm":  (0.02, 0.28),
+      # "toes_norm":   (0.45, 1.15),
     },
     "angles": {
         "left_knee":  (170, 180),
-        "right_knee": (170, 180)
+        "right_knee": (170, 180),
+        "left_hip":   (170, 180),
+        "right_hip":  (170, 180)
     },
     "min_score": 0.6,
   },
@@ -240,7 +243,9 @@ MOVEMENT_RULES = [
     },
     "angles": {
         "left_knee":  (170, 180),
-        "right_knee": (170, 180)
+        "right_knee": (170, 180),
+        "left_hip":   (150, 170),
+        "right_hip":  (150, 170)
     },
     "min_score": 0.6,
   },
@@ -250,13 +255,15 @@ MOVEMENT_RULES = [
     "variants": [
       {
         "label": "пятка левой ноги скрыта (приставлена)",
-        "visibility": {
-          "left_heel":  "hidden",
-          "right_heel": "visible",
-        },
+        # "visibility": {
+        #   "left_heel":  "hidden",
+        #   "right_heel": "visible",
+        #   "left_toe":   "visible",
+        # },
         "distances": {
-          "ankles_norm": (0.05, 0.45),
-          "heels_norm":  (0.05, 0.50),
+          "ankles_norm": (0.12, 0.70),
+          "right_heel_left_toe_norm": (0.35, 1.10),
+          "toes_norm": (0.25, 1.25),
         },
         "angles": {
         "left_knee":  (170, 180),
@@ -265,13 +272,15 @@ MOVEMENT_RULES = [
       },
       {
         "label": "пятка правой ноги скрыта (приставлена)",
-        "visibility": {
-          "right_heel": "hidden",
-          "left_heel":  "visible",
-        },
+        # "visibility": {
+        #   "right_heel": "hidden",
+        #   "left_heel":  "visible",
+        #   "right_toe":  "visible",
+        # },
         "distances": {
-          "ankles_norm": (0.05, 0.45),
-          "heels_norm":  (0.05, 0.50),
+          "ankles_norm": (0.12, 0.70),
+          "left_heel_right_toe_norm": (0.35, 1.10),
+          "toes_norm": (0.25, 1.25),
         },
         "angles": {
         "left_knee":  (170, 180),
@@ -284,17 +293,20 @@ MOVEMENT_RULES = [
   {
     "id": "pos4",
     "name": "IV position",
-    "visibility": {
-      "left_heel":  "visible",
-      "right_heel": "visible",
-    },
+    # "visibility": {
+    #   "left_heel":  "visible",
+    #   "right_heel": "visible",
+    # },
     "distances": {
-      "ankles_norm":      (0.30, 0.90),
-      "ankle_depth_norm": (0.15, 0.80),
+      "ankles_norm":      (0.35, 1.20),
+      "ankle_depth_norm": (0.20, 0.95),
+      "heel_depth_norm":  (0.15, 0.90),
     },
     "angles": {
         "left_knee":  (170, 180), 
-        "right_knee": (170, 180)
+        "right_knee": (170, 180),
+        "left_hip":   (170, 180),
+        "right_hip":  (170, 180)
     },
     "min_score": 0.6,
   },
@@ -304,34 +316,42 @@ MOVEMENT_RULES = [
     "variants": [
       {
         "label": "левая пятка за правой стопой",
-        "visibility": {
-          "left_heel":  "hidden",
-          "right_heel": "visible",
-        },
+        # "visibility": {
+        #   "left_heel":  "hidden",
+        #   "right_heel": "visible",
+        #   "left_toe":   "hidden",
+        # },
         "distances": {
-          "ankles_norm": (0.02, 0.35),
-          "heels_norm":  (0.02, 0.35),
-          "left_heel_right_toe_norm": (0.05, 0.55),
+          "ankles_norm": (0.02, 0.32),
+          "heels_norm":  (0.00, 0.30),
+          "left_heel_right_toe_norm": (0.00, 0.45),
+          "right_heel_left_toe_norm": (0.00, 0.35),
         },
         "angles": {
-            "left_knee":  (170, 180), 
-            "right_knee": (170, 180)
+            # "left_knee":  (170, 180), 
+            "right_knee": (170, 180),
+            "left_hip":   (170, 180),
+            "right_hip":  (170, 180)
         },
       },
       {
         "label": "правая пятка за левой стопой",
-        "visibility": {
-          "right_heel": "hidden",
-          "left_heel":  "visible",
-        },
+        # "visibility": {
+        #   "right_heel": "hidden",
+        #   "left_heel":  "visible",
+        #   "right_toe":  "hidden",
+        # },
         "distances": {
-          "ankles_norm": (0.02, 0.35),
-          "heels_norm":  (0.02, 0.35),
-          "right_heel_left_toe_norm": (0.05, 0.55),
+          "ankles_norm": (0.02, 0.32),
+          "heels_norm":  (0.00, 0.30),
+          "right_heel_left_toe_norm": (0.00, 0.45),
+          "left_heel_right_toe_norm": (0.00, 0.35),
         },
         "angles": {
             "left_knee":  (170, 180), 
-            "right_knee": (170, 180)
+            # "right_knee": (170, 180),
+            "left_hip":   (175, 180),
+            "right_hip":  (175, 180)
         },
       },
     ],

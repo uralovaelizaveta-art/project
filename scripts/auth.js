@@ -205,13 +205,22 @@ function initFeedbackPage() {
   if (document.body.dataset.page !== "feedback") return;
   const form = document.getElementById("feedbackForm");
   if (!form) return;
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const subject = document.getElementById("feedbackSubject").value.trim();
     const message = document.getElementById("feedbackMessage").value.trim();
     const contact = document.getElementById("feedbackContact").value.trim();
     saveFeedback({ subject, message, contact, userId: getCurrentUser()?.id || null });
+    try {
+      await sendFeedbackToTelegram({ subject, message, contact });
+    } catch (error) {
+      console.error("Telegram feedback error:", error);
+      alert("Не удалось отправить сообщение в Telegram. Проверьте, что сервер запущен и бот настроен.");
+      return;
+    }
     form.reset();
+    alert("Спасибо! Сообщение отправлено в Telegram.");
+    return;
     alert("Спасибо за ваше сообщение! В учебной версии оно сохранено локально.");
   });
 }

@@ -40,7 +40,7 @@ function initFooterFeedback() {
     });
     setStoredJson("footerFeedback", feedback);
     message.value = "";
-    alert("Спасибо! Сообщение сохранено (в учебной версии — локально).");
+    alert("Спасибо! Сообщение сохранено.");
   });
 }
 

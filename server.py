@@ -3,10 +3,13 @@ import base64
 import json
 import os
 import time
+import urllib.parse
+import urllib.request
 import cv2
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import numpy as np
 from starlette.concurrency import run_in_threadpool
 
@@ -22,6 +25,16 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
+
+class FeedbackMessage(BaseModel):
+    message: str
+    subject: str | None = None
+    contact: str | None = None
+    page: str | None = None
 
 # Инициализация модели при запуске
 MODEL_PATH = os.getenv("MODEL_PATH", "pose_landmarker_lite.task")
@@ -126,3 +139,45 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+def send_telegram_message(text: str):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        raise RuntimeError("Telegram bot token or chat id is not configured")
+
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    data = urllib.parse.urlencode({
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": text,
+        "parse_mode": "HTML",
+    }).encode("utf-8")
+
+    request = urllib.request.Request(url, data=data, method="POST")
+    with urllib.request.urlopen(request, timeout=10) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    if not payload.get("ok"):
+        raise RuntimeError(payload.get("description", "Telegram API error"))
+
+
+@app.post("/feedback")
+async def feedback(payload: FeedbackMessage):
+    message = payload.message.strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="Message is empty")
+
+    text_parts = ["<b>Новое сообщение с сайта</b>"]
+    if payload.subject:
+        text_parts.append(f"<b>Тема:</b> {payload.subject.strip()}")
+    text_parts.append(f"<b>Сообщение:</b>\n{message}")
+    if payload.contact:
+        text_parts.append(f"<b>Контакт:</b> {payload.contact.strip()}")
+    if payload.page:
+        text_parts.append(f"<b>Страница:</b> {payload.page.strip()}")
+
+    try:
+        await run_in_threadpool(send_telegram_message, "\n\n".join(text_parts))
+    except Exception as exc:
+        print(f"[Feedback] Telegram send error: {exc}")
+        raise HTTPException(status_code=502, detail="Failed to send Telegram message")
+
+    return {"status": "sent"}

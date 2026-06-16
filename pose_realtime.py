@@ -624,36 +624,79 @@ class RealtimeSession:
         movement_id = "unknown"
         movement_name = CLASSIFIER_SETTINGS.get("unknown_name", "Не определено")
         confidence = 0.0
+        pose_points = {}
+        ready_for_detection = False
 
         if result.pose_landmarks:
             landmarks = result.pose_landmarks[0]
             points = PoseGeometry.extract_points(landmarks, w, h)
-            angles = PoseGeometry.compute_angles(points)
-            distances = PoseGeometry.compute_distances(points)
-            foot_state = PoseGeometry.compute_foot_state(points)
+            pose_points = {
+                name: {
+                    "x": round(point.x / w, 4),
+                    "y": round(point.y / h, 4),
+                    "visibility": round(point.visibility, 3),
+                }
+                for name, point in points.items()
+            }
+            ready_for_detection = self._is_ready_for_detection(points, w, h)
+            if not ready_for_detection:
+                movement_name = "Отойдите назад"
+            else:
+                angles = PoseGeometry.compute_angles(points)
+                distances = PoseGeometry.compute_distances(points)
+                foot_state = PoseGeometry.compute_foot_state(points)
 
-            classification = _classifier.classify(angles, distances, foot_state)
-            movement_id = classification.movement_id
-            movement_name = classification.movement_name
-            confidence = classification.confidence
+                classification = _classifier.classify(angles, distances, foot_state)
+                movement_id = classification.movement_id
+                movement_name = classification.movement_name
+                confidence = classification.confidence
 
-            added = self.timeline.update(
-                movement_id,
-                movement_name,
-                confidence,
-            )
-            if added:
-                seq = self.sequence_detector.check(self.timeline)
-                if seq:
-                    self.timeline.add_sequence(seq)
+                added = self.timeline.update(
+                    movement_id,
+                    movement_name,
+                    confidence,
+                )
+                if added:
+                    seq = self.sequence_detector.check(self.timeline)
+                    if seq:
+                        self.timeline.add_sequence(seq)
 
         return {
             "movement": movement_name,
             "movement_id": movement_id,
             "confidence": confidence,
+            "ready_for_detection": ready_for_detection,
+            "pose_points": pose_points,
             "movements": self.timeline.get_events_for_api(),
             "sequences": self.timeline.get_sequences_for_api(),
         }
+
+    @staticmethod
+    def _is_ready_for_detection(points: dict[str, Point2D], frame_w: int, frame_h: int) -> bool:
+        required_points = (
+            "left_shoulder",
+            "right_shoulder",
+            "left_hip",
+            "right_hip",
+            "left_knee",
+            "right_knee",
+            "left_ankle",
+            "right_ankle",
+        )
+        visible = [points[name] for name in required_points if points[name].visibility >= 0.35]
+        if len(visible) < len(required_points):
+            return False
+
+        xs = [point.x / frame_w for point in visible]
+        ys = [point.y / frame_h for point in visible]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        body_width = max_x - min_x
+        body_height = max_y - min_y
+
+        touches_edge = min_x < 0.03 or max_x > 0.97 or min_y < 0.03 or max_y > 0.97
+        too_close = body_width > 0.85 or body_height > 0.9
+        return not touches_edge and not too_close
 
     @classmethod
     def draw_skeleton(cls, frame, points: dict[str, Point2D]): #Отрисовка скелета и ключевых точек на кадре для визуализации.
