@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 @dataclass
-class RecordedMovement:
+class RecordedMovement: #Описывает одно распознанное движение с его идентификатором, названием, уверенностью и временем распознавания. Эти объекты сохраняются в истории движений в MovementTimeline.
     movement_id: str
     movement_name: str
     confidence: float
@@ -22,7 +22,7 @@ class RecordedMovement:
 
 
 @dataclass
-class SequenceDetection:
+class SequenceDetection: #Описывает распознавание составной последовательности движений. Содержит идентификатор и название последовательности, время распознавания (время последнего шага) и список шагов, которые были распознаны для этой последовательности.
     sequence_id: str
     sequence_name: str
     time_sec: float
@@ -30,17 +30,14 @@ class SequenceDetection:
 
 
 @dataclass
-class TimelineSettings:
+class TimelineSettings: #Настройки для MovementTimeline. Содержит минимальное время удержания для распознавания движения, время перезарядки между распознаваниями одного и того же движения, а также максимальное количество движений в истории.
     min_hold_sec: float = 0.15
     cooldown_sec: float = 0.8
     max_history: int = 50
 
 
-class MovementTimeline:
-    """
-    Запоминает распознанные движения с меткой времени.
-    Одно и то же движение добавляется только после удержания min_hold_sec.
-    """
+class MovementTimeline:#Запоминает распознанные движения с меткой времени. Одно и то же движение добавляется только после удержания min_hold_sec.
+    
 
     def __init__(
         self,
@@ -59,13 +56,11 @@ class MovementTimeline:
         self._candidate_confidence: float = 0.0
         self._candidate_since: float | None = None
 
-    def _now(self) -> float:
+    def _now(self) -> float: #Текущее время с начала сессии в секундах. Используется для отметки времени распознавания движений относительно начала сессии.
         return time.time() - self.session_start
 
-    def update(self, movement_id: str, movement_name: str, confidence: float) -> bool:
-        """
-        Вызывать каждый кадр. Возвращает True, если в историю добавлено новое движение.
-        """
+    def update(self, movement_id: str, movement_name: str, confidence: float) -> bool:# Вызывать каждый кадр. Возвращает True, если в историю добавлено новое движение.
+
         now = self._now()
         unknown_ids = {"unknown", ""}
 
@@ -104,22 +99,22 @@ class MovementTimeline:
         self._reset_candidate()
         return True
 
-    def _reset_candidate(self):
+    def _reset_candidate(self): #Сброс текущего кандидата на распознавание движения. Вызывается, когда распознавание не удалось или когда движение успешно добавлено в историю, чтобы начать отслеживать новое движение.
         self._candidate_id = None
         self._candidate_name = ""
         self._candidate_confidence = 0.0
         self._candidate_since = None
 
-    def add_sequence(self, detection: SequenceDetection):
+    def add_sequence(self, detection: SequenceDetection): #Добавление распознанной последовательности в список распознанных последовательностей. Вызывается SequenceDetector после успешного распознавания цепочки движений.
         self.sequences_detected.append(detection)
 
-    def get_recent(self, count: int = 8) -> list[RecordedMovement]:
+    def get_recent(self, count: int = 8) -> list[RecordedMovement]:# Получение последних распознанных движений из истории. Возвращает не более count последних событий, чтобы показать недавнюю историю движений.
         return self.events[-count:]
 
-    def get_events_for_api(self) -> list[dict]:
+    def get_events_for_api(self) -> list[dict]:# Получение всех распознанных движений в формате словаря для API. Преобразует объекты RecordedMovement в словари, чтобы их можно было легко сериализовать в JSON при отправке клиенту или сохранении в файл.
         return [asdict(e) for e in self.events]
 
-    def get_sequences_for_api(self) -> list[dict]:
+    def get_sequences_for_api(self) -> list[dict]:# Получение всех распознанных последовательностей в формате словаря для API. Преобразует объекты SequenceDetection и их шаги в словари для удобной сериализации в JSON при отправке клиенту или сохранении в файл.
         return [
             {
                 "sequence_id": s.sequence_id,
@@ -130,7 +125,7 @@ class MovementTimeline:
             for s in self.sequences_detected
         ]
 
-    def export_json(self, path: str | Path | None = None) -> Path:
+    def export_json(self, path: str | Path | None = None) -> Path:# Экспорт всей истории движений и распознанных последовательностей в JSON-файл. Если путь не указан, используется session_log_path. Файл содержит время начала сессии, продолжительность, список событий и распознанных последовательностей для последующего анализа или отображения на сайте.
         path = Path(path or self.session_log_path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -143,7 +138,7 @@ class MovementTimeline:
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         return path
 
-    def format_history_lines(self, count: int = 6) -> list[str]:
+    def format_history_lines(self, count: int = 6) -> list[str]:# Форматирование последних распознанных движений и последовательностей в виде строк для отображения на сайте. Возвращает список строк, каждая из которых описывает распознанное движение с его временем, названием и уверенностью, а также распознанные последовательности. Это используется для отображения недавней истории движений и распознанных цепочек на сайте.
         lines = []
         for e in self.get_recent(count):
             lines.append(f"{e.time_sec:5.1f}s  {e.movement_name} ({e.confidence:.0%})")
@@ -152,11 +147,7 @@ class MovementTimeline:
         return lines
 
 
-class SequenceDetector:
-    """
-    Ищет составные движения (цепочки) в истории.
-    Правила задаются в movement_rules.py → SEQUENCE_RULES.
-    """
+class SequenceDetector: #Ищет составные движения (цепочки) в истории. Правила задаются в movement_rules.py → SEQUENCE_RULES.
 
     def __init__(self, sequence_rules: list[dict]):
         self.sequence_rules = sequence_rules
@@ -193,7 +184,7 @@ class SequenceDetector:
             return None
         return matched
 
-    def check(self, timeline: MovementTimeline) -> SequenceDetection | None:
+    def check(self, timeline: MovementTimeline) -> SequenceDetection | None: #Проверка наличия распознаваемых последовательностей в истории движений. Проходит по всем правилам, заданным в sequence_rules, и пытается найти соответствующие цепочки в истории событий. Если цепочка найдена и не была ранее распознана (проверка по ключу), возвращает объект SequenceDetection с деталями распознанной последовательности.
         events = timeline.events
         if not events:
             return None

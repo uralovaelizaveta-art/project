@@ -30,7 +30,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 
-class FeedbackMessage(BaseModel):
+class FeedbackMessage(BaseModel): #Модель данных для получения обратной связи от клиента через API. Содержит сообщение, а также необязательные поля для темы, контакта и страницы, с которой было отправлено сообщение.
     message: str
     subject: str | None = None
     contact: str | None = None
@@ -50,11 +50,11 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
-def decode_frame(base64_str: str) -> np.ndarray:
+def decode_frame(base64_str: str) -> np.ndarray: #Декодирование кадра из base64-строки. Это используется, если клиент отправляет кадр в виде строки, а не в виде байтов.
     img_bytes = base64.b64decode(base64_str)
     return decode_frame_bytes(img_bytes)
 
-def decode_frame_bytes(img_bytes: bytes) -> np.ndarray:
+def decode_frame_bytes(img_bytes: bytes) -> np.ndarray: #Декодирование кадра из байтов. Это используется, если клиент отправляет кадр в виде байтов, что может быть более эффективным, чем строка base64.
     encoded = np.frombuffer(img_bytes, dtype=np.uint8)
     frame_bgr = cv2.imdecode(encoded, cv2.IMREAD_COLOR)
     if frame_bgr is None:
@@ -62,7 +62,7 @@ def decode_frame_bytes(img_bytes: bytes) -> np.ndarray:
     return cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
 
 @app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+async def websocket_endpoint(websocket: WebSocket): #Обработка WebSocket-подключения для получения кадров, обработки их моделью и отправки результатов обратно клиенту. Каждое подключение получает свою сессию для обработки кадров.
     client_id = id(websocket)
     print(f"[WS {client_id}] Client connecting...")
     await websocket.accept()
@@ -137,11 +137,11 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"[WS {client_id}] Connection closed (frames processed: {frame_count})")
 
 @app.get("/health")
-async def health():
+async def health(): #Простая проверка работоспособности сервера. Возвращает статус "ok", если сервер запущен и отвечает на запросы.
     return {"status": "ok"}
 
 
-def send_telegram_message(text: str):
+def send_telegram_message(text: str): #Отправка сообщения в Telegram с помощью Bot API. Используется для отправки обратной связи от клиентов, которые используют API /feedback.
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         raise RuntimeError("Telegram bot token or chat id is not configured")
 
@@ -160,7 +160,7 @@ def send_telegram_message(text: str):
 
 
 @app.post("/feedback")
-async def feedback(payload: FeedbackMessage):
+async def feedback(payload: FeedbackMessage): #Обработка обратной связи от клиента. Получает сообщение и дополнительные данные, формирует текст для Telegram и отправляет его. Если сообщение пустое или возникает ошибка при отправке в Telegram, возвращает соответствующую ошибку.
     message = payload.message.strip()
     if not message:
         raise HTTPException(status_code=400, detail="Message is empty")
