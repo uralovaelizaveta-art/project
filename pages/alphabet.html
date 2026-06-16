@@ -9,6 +9,124 @@
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/pages.css">
   <link rel="stylesheet" href="../styles/responsive.css">
+  <style>
+    .page-alphabet-filters {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+
+    .tag {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .pill-toggle-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pill-toggle {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .pill-toggle:hover {
+      border-color: #007bff;
+      color: #007bff;
+    }
+
+    .pill-toggle.active {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    .alphabet-list-section {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .alphabet-letter-section {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .alphabet-letter {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #333;
+      padding: 1rem 0 0.5rem 0;
+      border-bottom: 2px solid #007bff;
+      margin: 0;
+    }
+
+    #alphabetList {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .movement-card {
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      transition: all 0.2s;
+      overflow: hidden;
+    }
+
+    .movement-card:hover {
+      border-color: #007bff;
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .movement-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .movement-card-content {
+      padding: 1.25rem;
+    }
+
+    .movement-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .movement-category {
+      font-size: 0.85rem;
+      color: #999;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .page-alphabet-filters {
+        grid-template-columns: 1fr;
+      }
+
+      .pill-toggle {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+  </style>
 </head>
 <body data-root="page" data-page="alphabet">
   <header class="site-header">
@@ -24,7 +142,7 @@
         <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Открыть меню">
           <span class="icon-arrow"></span>
         </button>
-        <form class="header-search" id="headerSearchForm">
+        <form class="header-search" id="headerSearchForm" autocomplete="off">
           <input
             type="search"
             id="headerSearchInput"
@@ -34,20 +152,19 @@
           >
           <button type="submit" class="btn btn-primary">Найти</button>
         </form>
-        <button
-          id="accountButton"
-          class="btn btn-outline account-button"
-          type="button"
-          title="Вход/Регистрация"
-        >
-          Вход/Регистрация
-        </button>
       </div>
     </div>
   </header>
 
   <aside class="sidebar" id="sidebar" aria-hidden="true">
-    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a href="../index.html" class="sidebar-link" data-page-link="home">Главная</a>
+      <a href="search.html" class="sidebar-link" data-page-link="search">Поиск</a>
+      <a href="alphabet.html" class="sidebar-link" data-page-link="alphabet">Алфавитный указатель</a>
+    
+      <!-- <a href="settings.html" class="sidebar-link" data-page-link="site-settings">Настройки сайта</a> -->
+
+    </nav>
   </aside>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
@@ -85,7 +202,9 @@
     </section>
 
     <section class="alphabet-list-section">
-      <div id="alphabetList"></div>
+      <div id="alphabetList">
+
+      </div>
     </section>
   </main>
 
@@ -117,6 +236,7 @@
   <script src="../scripts/router.js"></script>
   <script src="../scripts/api.js"></script>
   <script src="../scripts/auth.js"></script>
+  <script src="../scripts/alphabet.js"></script>
 </body>
 </html>
 

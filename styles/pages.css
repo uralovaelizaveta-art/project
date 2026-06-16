@@ -25,6 +25,22 @@
   margin-bottom: 0.4rem;
 }
 
+#searchResults.is-visible {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.search-result-card {
+  border: 1px solid var(--color-border-subtle);
+  background: #ffffff;
+}
+
+#searchEmptyMessage {
+  color: var(--color-text-muted);
+  margin-top: 1rem;
+}
+
 .page-alphabet-filters {
   display: flex;
   flex-wrap: wrap;

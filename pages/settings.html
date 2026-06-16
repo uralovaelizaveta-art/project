@@ -24,7 +24,7 @@
         <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Открыть меню">
           <span class="icon-arrow"></span>
         </button>
-        <form class="header-search" id="headerSearchForm">
+        <form class="header-search" id="headerSearchForm" autocomplete="off">
           <input
             type="search"
             id="headerSearchInput"
@@ -34,20 +34,17 @@
           >
           <button type="submit" class="btn btn-primary">Найти</button>
         </form>
-        <button
-          id="accountButton"
-          class="btn btn-outline account-button"
-          type="button"
-          title="Вход/Регистрация"
-        >
-          Вход/Регистрация
-        </button>
       </div>
     </div>
   </header>
 
   <aside class="sidebar" id="sidebar" aria-hidden="true">
-    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a href="../index.html" class="sidebar-link" data-page-link="home">Главная</a>
+      <a href="search.html" class="sidebar-link" data-page-link="search">Поиск</a>
+      <a href="alphabet.html" class="sidebar-link" data-page-link="alphabet">Алфавитный указатель</a>
+      <!-- <a href="settings.html" class="sidebar-link" data-page-link="site-settings">Настройки сайта</a> -->
+    </nav>
   </aside>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
@@ -63,7 +60,8 @@
     <div class="footer-inner">
       <div class="footer-column">
         <h3 class="footer-title">Контакты разработчика</h3>
-        <p>E-mail: <a href="mailto:qwerty@example.com">qwerty@example.com</a></p>
+        <p>E-mail: <a href="mailto:uralova.elizaveta@lit1533.ru">uralova.elizaveta@lit1533.ru</a></p>
+      </div>
       <div class="footer-column">
         <form id="footerFeedbackForm" class="footer-feedback-form">
           <label for="footerFeedbackMessage" class="footer-label">

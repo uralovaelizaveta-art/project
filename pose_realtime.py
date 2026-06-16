@@ -2,11 +2,13 @@ import sys
 sys.dont_write_bytecode = True
 
 import math
+import threading
 import time
 from dataclasses import dataclass
 
 import cv2
 import mediapipe as mp
+import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
@@ -44,6 +46,9 @@ class PoseModel:
 
     def detect(self, frame_bgr, timestamp_ms: int): #Преобразование кадра из BGR в RGB, создание объекта mp.Image и передача его в модель для получения позы. Результат — объект с данными о позе, который можно использовать для извлечения ключевых точек.
         frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        return self.detect_rgb(frame_rgb, timestamp_ms)
+
+    def detect_rgb(self, frame_rgb, timestamp_ms: int):
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
         return self.landmarker.detect_for_video(mp_image, timestamp_ms)
 
@@ -574,6 +579,116 @@ class RealTimePoseApp: #Главный класс приложения, кото
                 cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 0), 1, cv2.LINE_AA,
             )
             y += 18
+
+
+_pose_model = None
+_classifier = None
+_pose_model_lock = threading.Lock()
+_last_realtime_timestamp_ms = -1
+
+def init_model(model_path: str):
+    global _pose_model, _classifier
+    if _pose_model is None:
+        _pose_model = PoseModel(model_path, min_confidence=0.5)
+        _classifier = MovementClassifier()
+
+
+class RealtimeSession:
+    """Обработка кадров для одного WebSocket-подключения."""
+
+    def __init__(self, model_path: str | None = None):
+        if _pose_model is None:
+            init_model(model_path or "pose_landmarker_heavy.task")
+
+        self.timeline = MovementTimeline(
+            settings=TimelineSettings(
+                min_hold_sec=TIMELINE_SETTINGS.get("min_hold_sec", 0.15),
+                cooldown_sec=TIMELINE_SETTINGS.get("cooldown_sec", 0.8),
+                max_history=TIMELINE_SETTINGS.get("max_history", 50),
+            ),
+        )
+        self.sequence_detector = SequenceDetector(SEQUENCE_RULES)
+
+    def process_frame(self, frame_rgb: np.ndarray) -> dict:
+        global _last_realtime_timestamp_ms
+
+        with _pose_model_lock:
+            timestamp_ms = max(
+                time.monotonic_ns() // 1_000_000,
+                _last_realtime_timestamp_ms + 1,
+            )
+            result = _pose_model.detect_rgb(frame_rgb, timestamp_ms)
+            _last_realtime_timestamp_ms = timestamp_ms
+
+        h, w = frame_rgb.shape[:2]
+        movement_id = "unknown"
+        movement_name = CLASSIFIER_SETTINGS.get("unknown_name", "Не определено")
+        confidence = 0.0
+
+        if result.pose_landmarks:
+            landmarks = result.pose_landmarks[0]
+            points = PoseGeometry.extract_points(landmarks, w, h)
+            angles = PoseGeometry.compute_angles(points)
+            distances = PoseGeometry.compute_distances(points)
+            foot_state = PoseGeometry.compute_foot_state(points)
+
+            classification = _classifier.classify(angles, distances, foot_state)
+            movement_id = classification.movement_id
+            movement_name = classification.movement_name
+            confidence = classification.confidence
+
+            added = self.timeline.update(
+                movement_id,
+                movement_name,
+                confidence,
+            )
+            if added:
+                seq = self.sequence_detector.check(self.timeline)
+                if seq:
+                    self.timeline.add_sequence(seq)
+
+        return {
+            "movement": movement_name,
+            "movement_id": movement_id,
+            "confidence": confidence,
+            "movements": self.timeline.get_events_for_api(),
+            "sequences": self.timeline.get_sequences_for_api(),
+        }
+
+    @classmethod
+    def draw_skeleton(cls, frame, points: dict[str, Point2D]): #Отрисовка скелета и ключевых точек на кадре для визуализации.
+        for a_name, b_name in cls.CONNECTIONS:
+            a = points[a_name]
+            b = points[b_name]
+            if a.visibility < 0.45 or b.visibility < 0.45:
+                continue
+            cv2.line(
+                frame,
+                (int(a.x), int(a.y)),
+                (int(b.x), int(b.y)),
+                (254, 255, 125),
+                2,
+            )
+
+        for name, p in points.items():
+            if p.visibility < 0.1:
+                continue
+            cv2.circle(frame, (int(p.x), int(p.y)), 3, (255, 255, 255), -1)
+            cv2.putText(
+                frame,
+                name,
+                (int(p.x) + 5, int(p.y) - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.35,
+                (255, 255, 0),
+                1,
+                cv2.LINE_AA,
+            )
+
+def process_frame(frame_np) -> dict:
+    """Обратная совместимость для одиночных вызовов."""
+    session = RealtimeSession()
+    return session.process_frame(frame_np)
 
 
 if __name__ == "__main__":

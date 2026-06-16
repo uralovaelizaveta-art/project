@@ -9,6 +9,29 @@
   <link rel="stylesheet" href="../styles/components.css">
   <link rel="stylesheet" href="../styles/pages.css">
   <link rel="stylesheet" href="../styles/responsive.css">
+  <style>
+    .movement-detail { max-width: 900px; margin: 0 auto; }
+    .movement-header { display: grid; grid-template-columns: 1fr auto; gap: 2rem; margin-bottom: 2rem; background: white; padding: 2rem; border-radius: 8px; border: 1px solid #eee; align-items: start; }
+    .movement-title-block h1 { margin: 0 0 0.5rem 0; font-size: 2rem; }
+    .movement-subtitle { font-size: 1.1rem; color: #666; font-style: italic; margin: 0; }
+    .movement-category-badge { display: inline-block; background: #e7f3ff; color: #007bff; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-top: 1rem; }
+    .movement-actions { display: flex; gap: 0.5rem; flex-direction: column; }
+    .movement-btn { padding: 0.75rem 1rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+    .movement-btn:hover { background: #f9f9f9; border-color: #999; }
+    .content-section { background: white; padding: 2rem; border-radius: 8px; border: 1px solid #eee; margin-bottom: 1.5rem; }
+    .content-section h2 { margin-top: 0; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 0.5rem; }
+    .content-section p { line-height: 1.6; color: #555; }
+    .movement-image { width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; }
+    .tags-list { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .tag { background: #f0f0f0; padding: 0.4rem 0.8rem; border-radius: 4px; font-size: 0.85rem; color: #666; }
+    .back-link { display: inline-block; margin-bottom: 1.5rem; padding: 0.5rem 1rem; color: #007bff; text-decoration: none; border: 1px solid #007bff; border-radius: 4px; transition: all 0.2s; }
+    .back-link:hover { background: #007bff; color: white; }
+    @media (max-width: 768px) {
+      .movement-header { grid-template-columns: 1fr; }
+      .movement-actions { flex-direction: row; }
+      .movement-title-block h1 { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body data-root="page" data-page="movement">
   <header class="site-header">
@@ -24,100 +47,47 @@
         <button class="icon-button menu-toggle" id="menuToggle" type="button" aria-label="Открыть меню">
           <span class="icon-arrow"></span>
         </button>
-        <form class="header-search" id="headerSearchForm">
-          <input
-            type="search"
-            id="headerSearchInput"
-            class="input"
-            placeholder="Быстрый поиск движения..."
-            aria-label="Быстрый поиск движения"
-          >
-          <button type="submit" class="btn btn-primary">Найти</button>
-        </form>
-        <button
-          id="accountButton"
-          class="btn btn-outline account-button"
-          type="button"
-          title="Вход/Регистрация"
-        >
-          Вход/Регистрация
-        </button>
       </div>
     </div>
   </header>
 
   <aside class="sidebar" id="sidebar" aria-hidden="true">
-    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a href="../index.html" class="sidebar-link" data-page-link="home">Главная</a>
+      <a href="search.html" class="sidebar-link" data-page-link="search">Поиск</a>
+      <a href="alphabet.html" class="sidebar-link" data-page-link="alphabet">Алфавитный указатель</a>
+    </nav>
   </aside>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <main class="page">
-    <header class="page-movement-header">
-      <h1 id="movementTitle">Движение</h1>
-      <p id="movementSubtitle" class="movement-meta"></p>
-    </header>
+    <a href="alphabet.html" class="back-link">← Вернуться к указателю</a>
 
-    <section class="page-movement-layout">
-      <div>
-        <div class="movement-media">
-          <img id="movementImage" src="../assets/img/movement-placeholder.png" alt="Демонстрация движения" />
+    <div class="movement-detail" id="movementDetail">
+      <div class="movement-header">
+        <div class="movement-title-block">
+          <h1 id="movementName">Загрузка...</h1>
+          <p class="movement-subtitle" id="movementFrench"></p>
+          <div class="movement-category-badge" id="movementCategory"></div>
+          <div class="tags-list" id="tagsList"></div>
         </div>
         <div class="movement-actions">
-          <button class="btn btn-secondary" type="button" id="rateButton">Оценить выполнение</button>
-          <button
-            class="favorite-heart"
-            type="button"
-            id="favoriteButton"
-            title="Добавить в избранное"
-          >
-            ♡
-          </button>
-          <span id="favoriteHint" class="movement-meta"></span>
+          <button class="movement-btn" id="favoriteBtn">♥ В избранное</button>
         </div>
       </div>
 
-      <div>
-        <div class="card">
-          <h2>Описание движения</h2>
-          <p id="movementDescription">Информация о движении будет загружена из справочника.</p>
-        </div>
-
-        <div class="card note-block">
-          <h2>Мои заметки</h2>
-          <div id="notesForGuest">
-            Чтобы добавить заметку о движении, авторизуйтесь.
-          </div>
-          <div id="notesForUser" style="display:none;">
-            <textarea id="noteInput" class="textarea" rows="3" placeholder="Добавьте заметку о движении"></textarea>
-            <button class="btn btn-primary" type="button" id="saveNoteButton">Сохранить заметку</button>
-            <div style="margin-top:0.6rem;">
-              <strong>Заметки:</strong>
-              <div id="savedNote" class="note-content"></div>
-            </div>
-          </div>
-        </div>
+      <div class="content-section" id="descriptionSection">
+        <h2>Описание</h2>
+        <p id="description"></p>
       </div>
-    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-column">
         <h3 class="footer-title">Контакты разработчика</h3>
-        <p>E-mail: <a href="mailto:qwerty@example.com">qwerty@example.com</a></p>
-      <div class="footer-column">
-        <form id="footerFeedbackForm" class="footer-feedback-form">
-          <label for="footerFeedbackMessage" class="footer-label">
-            Если вы заметили ошибку или хотите что-то добавить, напишите об этом здесь:
-          </label>
-          <textarea
-            id="footerFeedbackMessage"
-            class="textarea"
-            rows="3"
-            placeholder="Ваше сообщение"
-          ></textarea>
-          <button type="submit" class="btn btn-secondary">Отправить</button>
-        </form>
+        <p>E-mail: <a href="mailto:uralova.elizaveta@lit1533.ru">uralova.elizaveta@lit1533.ru</a></p>
       </div>
     </div>
   </footer>
@@ -127,6 +97,6 @@
   <script src="../scripts/router.js"></script>
   <script src="../scripts/api.js"></script>
   <script src="../scripts/auth.js"></script>
+  <script src="../scripts/movement.js"></script>
 </body>
 </html>
-
