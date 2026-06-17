@@ -122,7 +122,7 @@ p {
 }
 
 .btn-outline {
-  background-color: transparent;
+  background-color: #fffaf3;
   border: 1px solid var(--color-accent);
   color: var(--color-accent);
   padding-inline: 1rem;

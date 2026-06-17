@@ -62,149 +62,183 @@ flowchart LR
 ## Компонентная архитектура
 
 ```mermaid
-flowchart TB
-    subgraph Browser[Браузер пользователя]
+flowchart LR
+    User([Пользователь])
+
+    subgraph UI[Интерфейс сайта]
         Pages[HTML-страницы]
-        AppJS[app.js: поиск и общая логика]
-        ApiJS[api.js: доступ к справочнику]
-        RealtimeJS[realtime.js: камера, WebSocket, overlay]
-        OtherJS[alphabet.js, movement.js, auth.js, ui.js]
-        LocalStorage[(localStorage)]
-        Camera[MediaDevices API]
-        Canvas[Canvas: скелет поверх видео]
+        Search[Поиск и подсказки]
+        MovementPage[Страница движения]
+        RealtimePage[Окно камеры]
+        Skeleton[Скелет поверх видео]
+        MovementList[Список распознанных движений]
     end
 
-    subgraph Backend[Python / FastAPI]
-        Server[server.py]
+    subgraph ClientLogic[JavaScript в браузере]
+        AppJS[app.js]
+        ApiJS[api.js]
+        MovementJS[movement.js]
+        AlphabetJS[alphabet.js]
+        RealtimeJS[realtime.js]
+        BrowserStorage[(localStorage)]
+        CameraAPI[MediaDevices API]
+        CanvasAPI[Canvas]
+    end
+
+    subgraph DataLayer[Данные справочника]
+        MovementsJSON[(data/movements.json)]
+    end
+
+    subgraph ServerLayer[Сервер распознавания]
+        Uvicorn[Uvicorn]
+        FastAPI[FastAPI server.py]
+        WebSocket[WebSocket /ws]
         Session[RealtimeSession]
-        Pose[PoseModel / MediaPipe]
+    end
+
+    subgraph RecognitionLayer[Модуль компьютерного зрения]
+        PoseModel[PoseModel]
+        MediaPipe[MediaPipe Pose Landmarker]
         Geometry[PoseGeometry]
         Classifier[MovementClassifier]
         Timeline[MovementTimeline]
         Sequence[SequenceDetector]
         Rules[movement_rules.py]
+        ModelFile[(pose_landmarker_lite.task)]
     end
 
-    subgraph Files[Файлы проекта]
-        Movements[(data/movements.json)]
-        Model[(pose_landmarker_lite.task)]
-        SessionLog[(data/movement_session.json)]
-    end
+    User --> Pages
+    Pages --> Search
+    Pages --> MovementPage
+    Pages --> RealtimePage
 
-    Pages --> AppJS
-    Pages --> OtherJS
-    ApiJS --> Movements
+    Search --> AppJS
+    MovementPage --> MovementJS
+    RealtimePage --> RealtimeJS
+
     AppJS --> ApiJS
-    OtherJS --> ApiJS
-    OtherJS <--> LocalStorage
+    MovementJS --> ApiJS
+    AlphabetJS --> ApiJS
+    ApiJS --> MovementsJSON
 
-    Camera --> RealtimeJS
-    RealtimeJS --> Canvas
-    RealtimeJS <-->|WebSocket: JPEG / JSON| Server
+    AppJS <--> BrowserStorage
+    RealtimeJS --> CameraAPI
+    CameraAPI --> RealtimeJS
+    RealtimeJS --> CanvasAPI
+    CanvasAPI --> Skeleton
+    RealtimeJS --> MovementList
 
-    Server --> Session
-    Session --> Pose
-    Pose --> Model
+    RealtimeJS <-->|кадры JPEG и JSON-результаты| WebSocket
+    Uvicorn --> FastAPI
+    FastAPI --> WebSocket
+    WebSocket --> Session
+
+    Session --> PoseModel
+    PoseModel --> MediaPipe
+    MediaPipe --> ModelFile
     Session --> Geometry
     Session --> Classifier
     Session --> Timeline
     Session --> Sequence
     Classifier --> Rules
     Sequence --> Rules
-    Timeline -. экспорт .-> SessionLog
+    Timeline --> MovementList
 ```
+
+Архитектура разделена на клиентскую и серверную части. В браузере работает интерфейс сайта, поиск по справочнику и окно камеры. Данные о движениях загружаются из `data/movements.json`. Для режима реального времени JavaScript получает изображение с камеры и отправляет кадры на FastAPI-сервер через WebSocket. Сервер передает кадры в модуль распознавания, где MediaPipe определяет ключевые точки тела, геометрический модуль рассчитывает признаки позы, а классификатор сравнивает их с правилами движений. После этого результат возвращается в браузер и отображается рядом с камерой.
 
 ## UML-диаграмма классов распознавания
 
 ```mermaid
 classDiagram
     class Point2D {
-        +float x
-        +float y
-        +float visibility
+        public float x
+        public float y
+        public float visibility
     }
 
     class PoseModel {
-        -PoseLandmarker landmarker
-        +detect(frame_bgr, timestamp_ms)
-        +detect_rgb(frame_rgb, timestamp_ms)
-        +close()
+        private PoseLandmarker landmarker
+        public detect(frame_bgr, timestamp_ms)
+        public detect_rgb(frame_rgb, timestamp_ms)
+        public close()
     }
 
     class PoseGeometry {
-        +dict KEYPOINTS
-        +list CONNECTIONS
-        +dict ANGLES
-        +extract_points(landmarks, width, height) dict
-        +compute_angles(points) dict
-        +compute_distances(points) dict
-        +compute_foot_state(points) dict
-        +draw_skeleton(frame, points)
+        public dict KEYPOINTS
+        public list CONNECTIONS
+        public dict ANGLES
+        public extract_points(landmarks, width, height) dict
+        public compute_angles(points) dict
+        public compute_distances(points) dict
+        public compute_foot_state(points) dict
+        public draw_skeleton(frame, points)
     }
 
     class ClassificationResult {
-        +str movement_id
-        +str movement_name
-        +float confidence
+        public str movement_id
+        public str movement_name
+        public float confidence
     }
 
     class MovementClassifier {
-        -list rules
-        -dict settings
-        +classify(angles, distances, foot_state) ClassificationResult
-        -_score_movement(angles, distances, foot_state, rule) float
-        -_score_block(angles, distances, foot_state, rule, block) float
+        private list rules
+        private dict settings
+        public classify(angles, distances, foot_state) ClassificationResult
+        private _score_movement(angles, distances, foot_state, rule) float
+        private _score_block(angles, distances, foot_state, rule, block) float
     }
 
     class RecordedMovement {
-        +str movement_id
-        +str movement_name
-        +float confidence
-        +float time_sec
+        public str movement_id
+        public str movement_name
+        public float confidence
+        public float time_sec
     }
 
     class SequenceDetection {
-        +str sequence_id
-        +str sequence_name
-        +float time_sec
-        +list steps
+        public str sequence_id
+        public str sequence_name
+        public float time_sec
+        public list steps
     }
 
     class TimelineSettings {
-        +float min_hold_sec
-        +float cooldown_sec
-        +int max_history
+        public float min_hold_sec
+        public float cooldown_sec
+        public int max_history
     }
 
     class MovementTimeline {
-        +list events
-        +list sequences_detected
-        +update(movement_id, movement_name, confidence) bool
-        +add_sequence(detection)
-        +get_events_for_api() list
-        +get_sequences_for_api() list
-        +export_json(path)
+        public list events
+        public list sequences_detected
+        public update(movement_id, movement_name, confidence) bool
+        public add_sequence(detection)
+        public get_events_for_api() list
+        public get_sequences_for_api() list
+        public export_json(path)
     }
 
     class SequenceDetector {
-        -list sequence_rules
-        +check(timeline) SequenceDetection
-        -_match_steps(events, step_ids, max_gap, max_total)
+        private list sequence_rules
+        public check(timeline) SequenceDetection
+        private _match_steps(events, step_ids, max_gap, max_total)
     }
 
     class RealtimeSession {
-        +MovementTimeline timeline
-        +SequenceDetector sequence_detector
-        +process_frame(frame_rgb) dict
+        public MovementTimeline timeline
+        public SequenceDetector sequence_detector
+        public process_frame(frame_rgb) dict
+        private _is_ready_for_detection(points, frame_w, frame_h) bool
     }
 
     class RealTimePoseApp {
-        +PoseModel model
-        +PoseGeometry geometry
-        +MovementClassifier classifier
-        +MovementTimeline timeline
-        +SequenceDetector sequence_detector
-        +run()
+        public PoseModel model
+        public PoseGeometry geometry
+        public MovementClassifier classifier
+        public MovementTimeline timeline
+        public SequenceDetector sequence_detector
+        public run()
     }
 
     PoseGeometry ..> Point2D : создает и использует
@@ -291,41 +325,41 @@ classDiagram
 ```mermaid
 sequenceDiagram
     actor User as Пользователь
-    participant UI as realtime.js
+    participant UI as Интерфейс сайта
     participant Camera as Камера
-    participant WS as FastAPI WebSocket
-    participant Session as RealtimeSession
-    participant Pose as MediaPipe PoseModel
-    participant Geometry as PoseGeometry
-    participant Classifier as MovementClassifier
-    participant Timeline as MovementTimeline
+    participant WS as Сервер FastAPI
+    participant Session as Сессия распознавания
+    participant Pose as MediaPipe
+    participant Geometry as Анализ позы
+    participant Classifier as Правила движений
+    participant Timeline as История движений
 
     User->>UI: Нажимает "Включить камеру"
-    UI->>Camera: getUserMedia()
-    Camera-->>UI: Видеопоток
-    UI->>WS: Открывает /ws
-    WS->>Session: Создает сессию
+    UI->>Camera: Запрашивает доступ к камере
+    Camera-->>UI: Передает видеопоток
+    UI->>WS: Открывает постоянное соединение
+    WS->>Session: Создает отдельную сессию для пользователя
 
     loop Пока камера включена
-        UI->>UI: Масштабирует кадр и кодирует JPEG
-        UI->>WS: Отправляет бинарный кадр
-        WS->>Session: process_frame(frame)
-        Session->>Pose: detect_rgb(frame, timestamp)
-        Pose-->>Session: ключевые точки позы
-        Session->>Geometry: углы, расстояния, видимость
-        Geometry-->>Session: признаки движения
-        Session->>Classifier: classify(features)
-        Classifier-->>Session: движение и уверенность
-        Session->>Timeline: update(movement)
-        Timeline-->>Session: история движений
-        Session-->>WS: результат + pose_points + история
-        WS-->>UI: JSON-ответ
-        UI->>UI: Рисует скелет и обновляет список
+        UI->>UI: Подготавливает кадр для отправки
+        UI->>WS: Отправляет изображение с камеры
+        WS->>Session: Передает кадр на обработку
+        Session->>Pose: Определяет положение тела на кадре
+        Pose-->>Session: Возвращает координаты ключевых точек
+        Session->>Geometry: Рассчитывает признаки позы
+        Geometry-->>Session: Возвращает углы, расстояния и видимость точек
+        Session->>Classifier: Сравнивает позу с правилами движений
+        Classifier-->>Session: Возвращает название движения и уверенность
+        Session->>Timeline: Добавляет устойчивый результат в историю
+        Timeline-->>Session: Возвращает обновленный список движений
+        Session-->>WS: Формирует ответ с результатом, точками тела и историей
+        WS-->>UI: Отправляет результат распознавания
+        UI->>UI: Обновляет название движения, список и скелет
     end
 
     User->>UI: Нажимает "Выключить камеру"
-    UI->>Camera: Останавливает tracks
-    UI->>WS: Закрывает соединение
+    UI->>Camera: Останавливает видеопоток
+    UI->>WS: Закрывает соединение с сервером
 ```
 
 ## Диаграмма активности распознавания кадра
